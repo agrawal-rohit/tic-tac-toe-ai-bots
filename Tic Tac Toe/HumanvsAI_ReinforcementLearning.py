@@ -114,7 +114,7 @@ def getBestMove(state, player, epsilon):
         best_move = random.choice(empty_cells)
         print('Agent decides to explore! Takes action = ' + str(best_move))
         epsilon *= 0.99
-    else:
+    else:   #Exploitation
         best_move = moves[best_move_idx]
         print('Agent decides to exploit! Takes action = ' + str(best_move))
     return best_move
