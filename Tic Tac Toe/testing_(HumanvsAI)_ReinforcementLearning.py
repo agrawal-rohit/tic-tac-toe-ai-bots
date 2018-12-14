@@ -1,6 +1,7 @@
 import numpy as np
 from math import inf as infinity
 import itertools
+import random
 
 game_state = [[' ',' ',' '],
               [' ',' ',' '],
@@ -71,30 +72,20 @@ states_dict = {}
 all_possible_states = [[list(i[0:3]),list(i[3:6]),list(i[6:10])] for i in itertools.product(player, repeat = 9)]
 n_states = len(all_possible_states) # 2 players, 9 spaces
 n_actions = 9   # 9 spaces
-state_values_for_AI_O = np.full((n_states),0.0)
-state_values_for_AI_X = np.full((n_states),0.0)
+state_values_for_AI = np.full((n_states),0.0)
 print("n_states = %i \nn_actions = %i"%(n_states, n_actions))
 
-# State values for AI 'O'
 for i in range(n_states):
     states_dict[i] = all_possible_states[i]
     winner, _ = check_current_state(states_dict[i])
     if winner == 'O':   # AI won
-        state_values_for_AI_O[i] = 1
+        state_values_for_AI[i] = 1
     elif winner == 'X':   # AI lost
-        state_values_for_AI_O[i] = -1
-        
-# State values for AI 'X'       
-for i in range(n_states):
-    winner, _ = check_current_state(states_dict[i])
-    if winner == 'O':   # AI lost
-        state_values_for_AI_X[i] = -1
-    elif winner == 'X':   # AI won
-        state_values_for_AI_X[i] = 1
+        state_values_for_AI[i] = -1
 
 def update_state_value(curr_state_idx, next_state_idx, learning_rate):
-    new_value = state_values_for_AI_O[curr_state_idx] + learning_rate*(state_values_for_AI_O[next_state_idx]  - state_values_for_AI_O[curr_state_idx])
-    state_values_for_AI_O[curr_state_idx] = new_value
+    new_value = state_values_for_AI[curr_state_idx] + learning_rate*(state_values_for_AI[next_state_idx]  - state_values_for_AI[curr_state_idx])
+    state_values_for_AI[curr_state_idx] = new_value
 
 def getBestMove(state, player):
     '''
@@ -113,16 +104,19 @@ def getBestMove(state, player):
         new_state = copy_game_state(state)
         play_move(new_state, player, empty_cell)
         next_state_idx = list(states_dict.keys())[list(states_dict.values()).index(new_state)]
-        curr_state_values.append(state_values_for_AI_O[next_state_idx])
+        curr_state_values.append(state_values_for_AI[next_state_idx])
         
     print('Possible moves = ' + str(moves))
-    print('Move values = ' + str(curr_state_values))
+    print('Move values = ' + str(curr_state_values))    
     best_move_idx = np.argmax(curr_state_values)
     best_move = moves[best_move_idx]
     return best_move
 
 # PLaying
-learning_rate = 0.2
+    
+#LOAD TRAINED STATE VALUES
+state_values_for_AI = np.loadtxt('trained_state_values_O.txt', dtype=np.float64)
+
 play_again = 'Y'
 while play_again == 'Y' or play_again == 'y':
     game_state = [[' ',' ',' '],
@@ -152,8 +146,6 @@ while play_again == 'Y' or play_again == 'y':
             new_state_idx = list(states_dict.keys())[list(states_dict.values()).index(game_state)]
         
         print_board(game_state)
-        print('State value = ' + str(state_values_for_AI_O[new_state_idx]))
-        update_state_value(curr_state_idx, new_state_idx, learning_rate)
         winner, current_state = check_current_state(game_state)
         if winner is not None:
             print(str(winner) + " won!")
@@ -164,6 +156,5 @@ while play_again == 'Y' or play_again == 'y':
             print("Draw!")
             
     play_again = input('Wanna try again BIYTACH?(Y/N) : ')
-    if play_again == 'N':
-        print('Suit yourself bitch!')
+print('Suit yourself bitch!')        
     
