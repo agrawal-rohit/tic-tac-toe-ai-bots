@@ -87,7 +87,7 @@ def update_state_value(curr_state_idx, next_state_idx, learning_rate):
     new_value = state_values_for_AI[curr_state_idx] + learning_rate*(state_values_for_AI[next_state_idx]  - state_values_for_AI[curr_state_idx])
     state_values_for_AI[curr_state_idx] = new_value
 
-def getBestMove(state, player):
+def getBestMove_RL(state, player):
     '''
     Reinforcement Learning Algorithm
     '''    
@@ -112,48 +112,100 @@ def getBestMove(state, player):
     best_move = moves[best_move_idx]
     return best_move
 
+def getBestMove_Minimax(state, player):
+    '''
+    Minimax Algorithm
+    '''
+    winner_loser , done = check_current_state(state)
+    if done == "Done" and winner_loser == 'O': # If AI won
+        return 1
+    elif done == "Done" and winner_loser == 'X': # If Human won
+        return -1
+    elif done == "Draw":    # Draw condition
+        return 0
+        
+    moves = []
+    empty_cells = []
+    for i in range(3):
+        for j in range(3):
+            if state[i][j] is ' ':
+                empty_cells.append(i*3 + (j+1))
+    
+    for empty_cell in empty_cells:
+        move = {}
+        move['index'] = empty_cell
+        new_state = copy_game_state(state)
+        play_move(new_state, player, empty_cell)
+        
+        if player == 'O':    # If AI
+            result = getBestMove_Minimax(new_state, 'X')    # make more depth tree for human
+            move['score'] = result
+        else:
+            result = getBestMove_Minimax(new_state, 'O')    # make more depth tree for AI
+            move['score'] = result
+        
+        moves.append(move)
+
+    # Find best move
+    best_move = None
+    if player == 'O':   # If AI player
+        best = -infinity
+        for move in moves:
+            if move['score'] > best:
+                best = move['score']
+                best_move = move['index']
+    else:
+        best = infinity
+        for move in moves:
+            if move['score'] < best:
+                best = move['score']
+                best_move = move['index']
+                
+    return best_move
 # PLaying
     
 #LOAD TRAINED STATE VALUES
-state_values_for_AI = np.loadtxt('trained_state_values_O.txt', dtype=np.float64)
-
-play_again = 'Y'
-while play_again == 'Y' or play_again == 'y':
+state_values_for_AI = np.loadtxt('trained_state_values_X.txt', dtype=np.float64)
+minimax_wins = 0
+rl_wins = 0
+num_iterations = 10
+for iteration in range(num_iterations):
     game_state = [[' ',' ',' '],
               [' ',' ',' '],
               [' ',' ',' ']]
     current_state = "Not Done"
-    print("\nNew Game!")
+    print("\nNew Game! (X = RL Agent, O = Minimax Agent)")
     print_board(game_state)
-    player_choice = input("Choose which player goes first - X (You - the petty human) or O(The mighty AI): ")
-    winner = None
-    
-    if player_choice == 'X' or player_choice == 'x':
-        current_player_idx = 0
-    else:
-        current_player_idx = 1
+    current_player_idx = random.choice([0,1])
         
     while current_state == "Not Done":
         curr_state_idx = list(states_dict.keys())[list(states_dict.values()).index(game_state)]
-        if current_player_idx == 0: # Human's turn
-            block_choice = int(input("Oye Human, your turn! Choose where to place (1 to 9): "))
+        if current_player_idx == 0: # RL Agent's turn
+            block_choice = getBestMove_RL(game_state, players[current_player_idx])
             play_move(game_state ,players[current_player_idx], block_choice)
+            print("RL Agent plays move: " + str(block_choice))
             
-        else:   # AI's turn
-            block_choice = getBestMove(game_state, players[current_player_idx])
+        else:   # Minimax Agent's turn
+            block_choice = getBestMove_Minimax(game_state, players[current_player_idx])
             play_move(game_state ,players[current_player_idx], block_choice)
-            print("AI plays move: " + str(block_choice))
+            print("Minimax Agent plays move: " + str(block_choice))
         
         print_board(game_state)
         winner, current_state = check_current_state(game_state)
         if winner is not None:
-            print(str(winner) + " won!")
+            if winner == 'X':
+                print("RL Agent Won!")
+                rl_wins += 1
+            else:
+                print("Minimax Agent Won!")
+                minimax_wins += 1
         else:
             current_player_idx = (current_player_idx + 1)%2
         
         if current_state is "Draw":
             print("Draw!")
             
-    play_again = input('Wanna try again BIYTACH?(Y/N) : ')
-print('Suit yourself bitch!')        
+print('\nResults(' + str(num_iterations) + ' games):')
+print('Minimax Wins = ' + str(minimax_wins))        
+print('RL Agent Wins = ' + str(rl_wins) + '\n')        
     

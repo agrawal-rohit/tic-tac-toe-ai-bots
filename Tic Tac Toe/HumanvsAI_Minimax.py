@@ -139,6 +139,7 @@ while play_again == 'Y' or play_again == 'y':
         else:   # AI's turn
             block_choice = getBestMove(game_state, players[current_player_idx])
             play_move(game_state ,players[current_player_idx], block_choice)
+            print("AI plays move: " + str(block_choice))
         print_board(game_state)
         winner, current_state = check_current_state(game_state)
         if winner is not None:
