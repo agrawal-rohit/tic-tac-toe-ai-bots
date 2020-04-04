@@ -1,4 +1,4 @@
-# Tic Tac Toe Bot using RL and Minimax
+# A Tic Tac Toe Bot 
 
 This is the code repository for my article on Medium - [Playing Games with Python - Tic Tac Toe](https://towardsdatascience.com/lets-beat-games-using-a-bunch-of-code-part-1-tic-tac-toe-1543e981fec1), where I have tried to take the famous Tic-Tac-Toe game and create a bot proficient enough to beat human players, if not the game itself.
 
