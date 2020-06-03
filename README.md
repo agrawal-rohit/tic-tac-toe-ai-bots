@@ -5,7 +5,7 @@ This is the code repository for my article on Medium - [Playing Games with Pytho
 ## What's inside this repo?
 - A fully playable Tic-Tac-Toe environment.
 - A bot trained using Temporal Difference learning (A technique in Reinforcement learning). 
-- A bot trained using the Minima Algorithm.
+- A bot trained using the Minimax Algorithm.
 
 ## How to play against the Bots
 ### If you wish to play against the RL bot
