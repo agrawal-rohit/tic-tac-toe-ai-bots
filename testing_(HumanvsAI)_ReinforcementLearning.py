@@ -154,6 +154,6 @@ while play_again == 'Y' or play_again == 'y':
         if current_state is "Draw":
             print("Draw!")
             
-    play_again = input('Wanna try again BIYTACH?(Y/N) : ')
-print('Suit yourself bitch!')        
+    play_again = input('Wanna try again?(Y/N) : ')
+print('GG!')        
     
