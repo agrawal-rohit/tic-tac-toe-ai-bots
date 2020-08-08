@@ -1,5 +1,7 @@
 # A Tic Tac Toe Bot 
 
+![tictactoe](https://user-images.githubusercontent.com/29514438/89706167-c3120200-d980-11ea-8fdc-b3593c004ea4.png)
+
 This is the code repository for my article on Medium - [Playing Games with Python - Tic Tac Toe](https://towardsdatascience.com/lets-beat-games-using-a-bunch-of-code-part-1-tic-tac-toe-1543e981fec1), where I have tried to take the famous Tic-Tac-Toe game and create a bot proficient enough to beat human players, if not the game itself.
 
 ## What's inside this repo?
