@@ -7,14 +7,15 @@ This is the code repository for my article on Medium - [Playing Games with Pytho
 - A bot trained using Temporal Difference learning (A technique in Reinforcement learning). 
 - A bot trained using the Minimax Algorithm.
 
-## How to play against the Bots
-### If you wish to play against the RL bot
+## How to use
+
+### Play against the RL bot
 run ``` python testing_(HumanvsAI)_ReinforcementLearning.py```
 
-### If you wish to play against the Minimax bot
+### Play against the Minimax bot
 run ``` python HumanvsAI_Minimax.py```
 
-### If you wish to play against another human player
+### Play against another human player (Regular tic tac toe)
 run ``` python HumanvsHuman.py```
 
 ## Training the RL Bot
