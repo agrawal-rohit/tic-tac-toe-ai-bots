@@ -116,7 +116,7 @@ def getBestMove_Minimax(state, player):
     '''
     Minimax Algorithm
     '''
-    winner_loser , done = check_current_state(state)
+    winner_loser, done = check_current_state(state)
     if done == "Done" and winner_loser == 'O': # If AI won
         return 1
     elif done == "Done" and winner_loser == 'X': # If Human won
@@ -145,23 +145,44 @@ def getBestMove_Minimax(state, player):
             move['score'] = result
         
         moves.append(move)
-
+    from sys import maxsize as infinity
     # Find best move
-    best_move = None
+    best_move = []
+    for v in moves:
+        a = copy_game_state(state)
+        play_move(a, player, v['index'])
+        if check_current_state(a)[1] == 'Done':
+            return v['index']
+    for v in moves:
+        a = copy_game_state(state)
+        play_move(a, 'O' if player == 'X' else 'X', v['index'])
+        if check_current_state(a)[1] == 'Done':
+            return v['index']
+    ab = map(lambda x: x['index'], moves)
+    if 5 in ab:
+        return 5
     if player == 'O':   # If AI player
         best = -infinity
         for move in moves:
-            if move['score'] > best:
+            if move['score'] == best:
                 best = move['score']
-                best_move = move['index']
+                best_move.append(move['index'])
+            elif move['score'] > best:
+                best = move['score']
+                best_move = [move['index']]
     else:
         best = infinity
         for move in moves:
-            if move['score'] < best:
+            if move['score'] == best:
                 best = move['score']
-                best_move = move['index']
-                
-    return best_move
+                best_move.append(move['index'])
+            elif move['score'] < best:
+                best = move['score']
+                best_move = [move['index']]
+    for v in best_move:
+        if v in [1, 3, 7, 9]:
+            return v
+    return best_move[0]
 # PLaying
     
 #LOAD TRAINED STATE VALUES
@@ -169,12 +190,16 @@ state_values_for_AI = np.loadtxt('trained_state_values_X.txt', dtype=np.float64)
 minimax_wins = 0
 rl_wins = 0
 num_iterations = 10
+from random import choice
 for iteration in range(num_iterations):
+    t = choice(['X', 'O'])
+    u = 'O' if t == 'X' else 'X'
+    a = [t, u]
     game_state = [[' ',' ',' '],
               [' ',' ',' '],
               [' ',' ',' ']]
     current_state = "Not Done"
-    print("\nNew Game! (X = RL Agent, O = Minimax Agent)")
+    print(f"\nNew Game! ({t} = RL Agent, {u} = Minimax Agent)")
     print_board(game_state)
     current_player_idx = random.choice([0,1])
         
@@ -183,17 +208,15 @@ for iteration in range(num_iterations):
         if current_player_idx == 0: # RL Agent's turn
             block_choice = getBestMove_RL(game_state, players[current_player_idx])
             play_move(game_state ,players[current_player_idx], block_choice)
-            print("RL Agent plays move: " + str(block_choice))
             
         else:   # Minimax Agent's turn
             block_choice = getBestMove_Minimax(game_state, players[current_player_idx])
             play_move(game_state ,players[current_player_idx], block_choice)
-            print("Minimax Agent plays move: " + str(block_choice))
         
         print_board(game_state)
         winner, current_state = check_current_state(game_state)
         if winner is not None:
-            if winner == 'X':
+            if winner == t:
                 print("RL Agent Won!")
                 rl_wins += 1
             else:
@@ -204,8 +227,10 @@ for iteration in range(num_iterations):
         
         if current_state is "Draw":
             print("Draw!")
+    print(iteration + 1)
             
 print('\nResults(' + str(num_iterations) + ' games):')
 print('Minimax Wins = ' + str(minimax_wins))        
 print('RL Agent Wins = ' + str(rl_wins) + '\n')        
     
+
