@@ -97,7 +97,6 @@ def getBestMove(state, player):
             move['score'] = result
         
         moves.append(move)
-    from sys import maxsize as infinity
     # Find best move
     best_move = []
     for v in moves:
