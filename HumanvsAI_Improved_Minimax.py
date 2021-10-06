@@ -68,7 +68,7 @@ def getBestMove(state, player):
     '''
     Minimax Algorithm
     '''
-    winner_loser , done = check_current_state(state)
+    winner_loser, done = check_current_state(state)
     if done == "Done" and winner_loser == 'O': # If AI won
         return 1
     elif done == "Done" and winner_loser == 'X': # If Human won
@@ -97,23 +97,44 @@ def getBestMove(state, player):
             move['score'] = result
         
         moves.append(move)
-
+    from sys import maxsize as infinity
     # Find best move
-    best_move = None
+    best_move = []
+    for v in moves:
+        a = copy_game_state(state)
+        play_move(a, player, v['index'])
+        if check_current_state(a)[1] == 'Done':
+            return v['index']
+    for v in moves:
+        a = copy_game_state(state)
+        play_move(a, 'O' if player == 'X' else 'X', v['index'])
+        if check_current_state(a)[1] == 'Done':
+            return v['index']
+    ab = map(lambda x: x['index'], moves)
+    if 5 in ab:
+        return 5
     if player == 'O':   # If AI player
         best = -infinity
         for move in moves:
-            if move['score'] > best:
+            if move['score'] == best:
                 best = move['score']
-                best_move = move['index']
+                best_move.append(move['index'])
+            elif move['score'] > best:
+                best = move['score']
+                best_move = [move['index']]
     else:
         best = infinity
         for move in moves:
-            if move['score'] < best:
+            if move['score'] == best:
                 best = move['score']
-                best_move = move['index']
-                
-    return best_move
+                best_move.append(move['index'])
+            elif move['score'] < best:
+                best = move['score']
+                best_move = [move['index']]
+    for v in best_move:
+        if v in [1, 3, 7, 9]:
+            return v
+    return best_move[0]
 
 # PLaying
 play_again = 'Y'
@@ -154,3 +175,4 @@ while play_again == 'Y' or play_again == 'y':
     if play_again == 'N':
         print('GG!')
     
+
