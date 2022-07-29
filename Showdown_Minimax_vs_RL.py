@@ -118,17 +118,17 @@ def getBestMove_Minimax(state, player):
     '''
     winner_loser , done = check_current_state(state)
     if done == "Done" and winner_loser == 'O': # If AI won
-        return 1
+        return (1,0)
     elif done == "Done" and winner_loser == 'X': # If Human won
-        return -1
+        return (-1,0)
     elif done == "Draw":    # Draw condition
-        return 0
+        return (0,0)
         
     moves = []
     empty_cells = []
     for i in range(3):
         for j in range(3):
-            if state[i][j] is ' ':
+            if state[i][j] == ' ':
                 empty_cells.append(i*3 + (j+1))
     
     for empty_cell in empty_cells:
@@ -138,10 +138,10 @@ def getBestMove_Minimax(state, player):
         play_move(new_state, player, empty_cell)
         
         if player == 'O':    # If AI
-            result = getBestMove_Minimax(new_state, 'X')    # make more depth tree for human
+            result,_ = getBestMove_Minimax(new_state, 'X')    # make more depth tree for human
             move['score'] = result
         else:
-            result = getBestMove_Minimax(new_state, 'O')    # make more depth tree for AI
+            result,_ = getBestMove_Minimax(new_state, 'O')    # make more depth tree for AI
             move['score'] = result
         
         moves.append(move)
@@ -150,7 +150,7 @@ def getBestMove_Minimax(state, player):
     best_move = None
     if player == 'O':   # If AI player
         best = -infinity
-        for move in moves:
+        for move in moves:            
             if move['score'] > best:
                 best = move['score']
                 best_move = move['index']
@@ -161,7 +161,7 @@ def getBestMove_Minimax(state, player):
                 best = move['score']
                 best_move = move['index']
                 
-    return best_move
+    return (best, best_move)
 # PLaying
     
 #LOAD TRAINED STATE VALUES
@@ -186,7 +186,7 @@ for iteration in range(num_iterations):
             print("RL Agent plays move: " + str(block_choice))
             
         else:   # Minimax Agent's turn
-            block_choice = getBestMove_Minimax(game_state, players[current_player_idx])
+            _,block_choice = getBestMove_Minimax(game_state, players[current_player_idx])
             play_move(game_state ,players[current_player_idx], block_choice)
             print("Minimax Agent plays move: " + str(block_choice))
         
